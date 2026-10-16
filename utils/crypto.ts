@@ -13,7 +13,7 @@ async function getKey(passphrase: string, salt: Uint8Array): Promise<CryptoKey> 
   return window.crypto.subtle.deriveKey(
     {
       name: "PBKDF2",
-      salt: salt,
+      salt: salt.buffer as ArrayBuffer, // TypeScript tip uyumluluğu için düzeltildi
       iterations: 100000,
       hash: "SHA-256",
     },
@@ -37,7 +37,6 @@ export async function encryptText(text: string, passphrase: string): Promise<str
     enc.encode(text)
   );
 
-  // Salt, IV ve şifrelenmiş veriyi birleştirip Base64 formatına çevirelim
   const combined = new Uint8Array(salt.length + iv.length + encrypted.byteLength);
   combined.set(salt, 0);
   combined.set(iv, salt.length);
